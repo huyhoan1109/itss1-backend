@@ -1,0 +1,88 @@
+/signup POST 
+    "req": {
+        "name": "Nguyen Huy Hoan",
+        "email": "huyhoan1109@gmail.com",
+        "password": "123456789",
+        "phone": "0434353535",
+        "role": "teacher"
+    },
+    "res": "..."
+
+/login POST 
+    "req": {
+        "email": "huyhoan1109@gmail.com",
+        "password": "123456789"
+    },
+    "res": "..."
+
+
+/logout POST  
+    "req": null,
+    "res": "..."
+
+
+
+/teacher POST (Sau khi giáo viên login vào tài khoản của mình)
+    "req": {
+        "teacherID": "1",
+        "age": "20",
+        "level": "3",
+        "experience": "7",
+        "sex": "male",
+        "price": 90000,
+        "info_link": "hoan@fb.com",
+        "detail": "Hello my name is Hoan"
+    }
+    "res": "..."
+
+
+/teacher GET 
+    "req": "tự thêm query",
+    "res": {
+        "data": [ 
+            {
+                "id": 1,
+                "name": "Nguyen Huy Hoan",
+                "email": "huyhoan1109@gmail.com",
+                "phone": "0434353535",
+                "role": "teacher",
+                "address": "Ha Noi",
+                "imageURL": null,
+                "createdAt": "2023-06-02T12:42:57.000Z",
+                "updatedAt": "2023-06-02T13:04:53.000Z",
+                "age": 20,
+                "level": 3,
+                "experience": 7,
+                "sex": "male",
+                "price": 90000,
+                "info_link": "hoan@fb.com",
+                "detail": "Hello my name is Hoan"
+            }
+        ]
+    }
+
+
+
+/teacher/:id GET
+    "req": "không có",
+    "res": {
+        "data": {
+            "id": 1,
+            "name": "Nguyen Huy Hoan",
+            "email": "huyhoan1109@gmail.com",
+            "phone": "0434353535",
+            "role": "teacher",
+            "address": "Ha Noi",
+            "imageURL": null,
+            "createdAt": "2023-06-02T12:42:57.000Z",
+            "updatedAt": "2023-06-02T13:04:53.000Z",
+            "age": 20,
+            "level": 3,
+            "experience": 7,
+            "sex": "male",
+            "price": 90000,
+            "info_link": "hoan@fb.com",
+            "detail": "Hello my name is Hoan",
+            "comments": [{}]
+        }
+    }

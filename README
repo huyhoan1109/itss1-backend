@@ -1,0 +1,26 @@
+Sử  dụng database:
+    mysql 
+
+Cài node_modules: 
+    yarn
+
+Tạo file .env tự config:
+    DB_HOST="localhost"
+    DB_NAME="itss1"
+    DB_USER="username"
+    DB_PASSWORD="password"
+    REFRESH_TOKEN_SECRET="20986b6c97015cb1087bc37d31d7310d638b4a66c34101ea48f3f9c302f3c15ac371488eb85fa04d18c3d07c4e617537160aeac5fc0db9eb67ae7558a451d8bd"
+    ACCESS_TOKEN_SECRET="109c5e06195517b2fc268309ec3e3fee794eec291ce6c525b5a51e64abe5686c798ad031ecde21609b6fc25e23395567498ec743795d86f47135e796f505db41"
+    JWT_TIMEOUT="1h"
+
+Tạo sequelize-cli:
+    npx sequelize-cli init
+
+Migration: 
+    npx sequelize-cli db:migrate
+
+Undo migration:
+    npx sequelize-cli db:migrate:undo:all
+
+Run:
+    npm run dev
