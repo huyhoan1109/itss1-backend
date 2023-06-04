@@ -15,14 +15,25 @@
     },
     "res": "..."
 
-
 /logout POST  
     "req": null,
     "res": "..."
 
 
+/user GET (Lấy thông tin của user sau khi đăng nhập)
 
-/teacher POST (Sau khi giáo viên login vào tài khoản của mình)
+/user POST (Sửa thông tin của user sau khi đăng nhập)
+    "req": "",
+    "res": {
+        "id": ""
+        "name": "Nguyen Huy Hoan",
+        "email": "huyhoan1109@gmail.com",
+        "password": "123456789",
+        "phone": "0434353535",
+        "role": "teacher"
+    }
+
+/teacher/info POST (Sửa thông tin sau khi giáo viên login vào tài khoản của mình)
     "req": {
         "teacherID": "1",
         "age": "20",
