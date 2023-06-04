@@ -3,7 +3,7 @@
         "name": "Nguyen Huy Hoan",
         "email": "huyhoan1109@gmail.com",
         "password": "123456789",
-        "phone": "0434353535",
+        "phone": "01234567542",
         "role": "teacher"
     },
     "res": "..."
@@ -23,14 +23,10 @@
 /user GET (Lấy thông tin của user sau khi đăng nhập)
 
 /user POST (Sửa thông tin của user sau khi đăng nhập)
-    "req": "",
-    "res": {
-        "id": ""
-        "name": "Nguyen Huy Hoan",
-        "email": "huyhoan1109@gmail.com",
+    "req": {
         "password": "123456789",
         "phone": "0434353535",
-        "role": "teacher"
+        "name": "Nguyen Huy Hoan"
     }
 
 /teacher/info POST (Sửa thông tin sau khi giáo viên login vào tài khoản của mình)
@@ -42,7 +38,9 @@
         "gender": "male",
         "price": 90000,
         "info_link": "hoan@fb.com",
-        "detail": "Hello my name is Hoan"
+        "detail": "Hello my name is Hoan",
+        "certificate1": "TOEIC 800",
+        "teach_method1": "Online"
     }
     "res": "..."
 
@@ -50,28 +48,8 @@
 /teacher GET 
     "req": "tự thêm query",
     "res": {
-        "data": [ 
-            {
-                "id": 1,
-                "name": "Nguyen Huy Hoan",
-                "email": "huyhoan1109@gmail.com",
-                "phone": "0434353535",
-                "role": "teacher",
-                "address": "Ha Noi",
-                "imageURL": null,
-                "createdAt": "2023-06-02T12:42:57.000Z",
-                "updatedAt": "2023-06-02T13:04:53.000Z",
-                "age": 20,
-                "level": 3,
-                "experience": 7,
-                "gender": "male",
-                "price": 90000,
-                "info_link": "hoan@fb.com",
-                "detail": "Hello my name is Hoan"
-            }
-        ]
+        "data": [] (gồm mảng các teachers)
     }
-
 
 
 /teacher/:id GET
@@ -94,6 +72,11 @@
             "price": 90000,
             "info_link": "hoan@fb.com",
             "detail": "Hello my name is Hoan",
+            "certificate1": "TOEIC 800",
+            "certificate2": "",
+            "certificate3": "",
+            "teach_method1": "Online",
+            "teach_method2": "",
             "comments": [{}]
         }
     }
