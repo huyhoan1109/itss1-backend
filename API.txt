@@ -39,7 +39,7 @@
         "age": "20",
         "level": "3",
         "experience": "7",
-        "sex": "male",
+        "gender": "male",
         "price": 90000,
         "info_link": "hoan@fb.com",
         "detail": "Hello my name is Hoan"
@@ -64,7 +64,7 @@
                 "age": 20,
                 "level": 3,
                 "experience": 7,
-                "sex": "male",
+                "gender": "male",
                 "price": 90000,
                 "info_link": "hoan@fb.com",
                 "detail": "Hello my name is Hoan"
@@ -90,7 +90,7 @@
             "age": 20,
             "level": 3,
             "experience": 7,
-            "sex": "male",
+            "gender": "male",
             "price": 90000,
             "info_link": "hoan@fb.com",
             "detail": "Hello my name is Hoan",

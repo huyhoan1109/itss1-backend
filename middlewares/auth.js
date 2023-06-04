@@ -12,7 +12,7 @@ async function checkToken(req) {
 async function authUser(req, res, next){
     checkToken(req)
         .then((id) => {
-            req.userId = id
+            req.userID = id
             return next()
         })
         .catch(() => {
@@ -23,7 +23,7 @@ async function authUser(req, res, next){
 async function authTeacher(req, res, next){
     checkToken(req)
         .then(async (id) => {
-            req.userId = id
+            req.userID = id
             const user = await db.User.findOne({id})
             if (user.role == 'teacher') {
                 return next()
@@ -39,7 +39,7 @@ async function authTeacher(req, res, next){
 async function authAdmin(req, res, next){
     checkToken(req)
         .then(async (id) => {
-            req.userId = id
+            req.userID = id
             const user = await db.User.findOne({id})
             if (user.role == 'admin') {
                 return next()

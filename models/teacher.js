@@ -15,7 +15,22 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'teacherID',
         onUpdate: 'CASCADE', // optional
         onDelete: 'CASCADE',
-      });
+      })
+      Teacher.hasMany(models.ChatRoom, {
+          foreignKey: 'teacherID',
+          onUpdate: 'CASCADE', // optional
+          onDelete: 'CASCADE',
+      })
+      Teacher.hasMany(models.Comment, {
+        foreignKey: 'teacherID',
+        onUpdate: 'CASCADE', // optional
+        onDelete: 'CASCADE',
+      })
+      Teacher.hasMany(models.Evaluate, {
+        foreignKey: 'teacherID',
+        onUpdate: 'CASCADE', // optional
+        onDelete: 'CASCADE',
+      })
     }
   }
   Teacher.init({
@@ -37,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    sex: {
+    gender: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: "male"
@@ -53,6 +68,31 @@ module.exports = (sequelize, DataTypes) => {
     detail: {
       type: DataTypes.TEXT,
       allowNull: false
+    },
+    star_average: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+      defaultValue: 0
+    },
+    certificate1: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    certificate2: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    certificate3: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    teach_method1: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    teach_method2: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
   }, {
     sequelize,

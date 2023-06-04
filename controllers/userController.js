@@ -48,11 +48,11 @@ const logout = async (req, res) => {
 
 const getUser = async (req, res) => {
     try {
-        const { userId } = req;
-        const user = await db.User.findOne({id: userId});
+        const { userID } = req;
+        const user = await db.User.findOne({id: userID});
         try {
             if (user.role == 'teacher') {
-                const teacher = await db.Teacher.findOne({teacherID: userId});
+                const teacher = await db.Teacher.findOne({teacherID: userID});
                 let {teacherID, ...info} = teacher.dataValues
                 result = {...user.dataValues, ...info}
             }
@@ -67,7 +67,7 @@ const getUser = async (req, res) => {
 
 const postUser = async (req, res) => {
     try {
-        const { userId } = req
+        const { userID } = req
         const update = {};
         const keys = Object.keys(req.body)
         for (const key of keys){
@@ -75,7 +75,7 @@ const postUser = async (req, res) => {
                 update[key] = req.body[key];
             }
         }
-        const user = await db.User.findOne({id: userId})
+        const user = await db.User.findOne({id: userID})
         await user.update(update)
         await user.save({ fields: keys });
         const result = await user.reload();
@@ -87,7 +87,7 @@ const postUser = async (req, res) => {
 
 const requestMatch = async (req, res) => {
     try {
-        const studentId = req.userId
+        const studentId = req.userID
         const {teacherId, info} = req.body
         //TODO
         const data = null

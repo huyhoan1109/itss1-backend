@@ -12,6 +12,31 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      User.hasMany(models.Comment, {
+        foreignKey: 'userID',
+        onUpdate: 'CASCADE', // optional
+        onDelete: 'CASCADE',
+      })
+      User.hasMany(models.Chat, {
+        foreignKey: 'userID',
+        onUpdate: 'CASCADE', // optional
+        onDelete: 'CASCADE',
+      })
+      User.hasMany(models.ChatRoom, {
+        foreignKey: 'studentID',
+        onUpdate: 'CASCADE', // optional
+        onDelete: 'CASCADE',
+      })
+      User.hasMany(models.Comment, {
+        foreignKey: 'studentID',
+        onUpdate: 'CASCADE', // optional
+        onDelete: 'CASCADE',
+      })
+      User.hasMany(models.Evaluate, {
+        foreignKey: 'studentID',
+        onUpdate: 'CASCADE', // optional
+        onDelete: 'CASCADE',
+      })
     }
     validPassword(password){
       return bcrypt.compareSync(password, this.password);

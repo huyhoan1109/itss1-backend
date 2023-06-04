@@ -8,7 +8,7 @@ const filterTeacher = async (req, res) => {
     let high_age = filters.high_age
     let level = filters.level
     let experience = filters.experience
-    let sex = filters.sex
+    let gender = filters.gender
     let low_price = filters.low_price
     let high_price = filters.high_price
     let options = { 
@@ -33,8 +33,8 @@ const filterTeacher = async (req, res) => {
         options.where.level = level
     if (experience)
         options.where.experience = experience
-    if (sex)
-        options.where.sex = sex
+    if (gender)
+        options.where.gender = gender
     if (low_price && high_price)
         options.where.price = {
             [Op.and]:{
@@ -61,10 +61,10 @@ const filterTeacher = async (req, res) => {
 
 const infoTeacher = async (req, res) => {
     try {
-        const userId = req.params.id
-        const user = await db.User.findOne({id: userId})
+        const userID = req.params.id
+        const user = await db.User.findOne({id: userID})
         let {password, ...info} = user.dataValues
-        const teacher = await db.Teacher.findOne({teacherID: userId})
+        const teacher = await db.Teacher.findOne({teacherID: userID})
         let {teacherID, ...teacher_info} = teacher.dataValues
         const result = {...info, ...teacher_info}
         //TODO
@@ -76,7 +76,7 @@ const infoTeacher = async (req, res) => {
 }
 
 const postTeacher = async (req, res) => {
-    const { userId } = req
+    const { userID } = req
     try {
         const update = {};
         const keys = Object.keys(req.body)
@@ -85,13 +85,13 @@ const postTeacher = async (req, res) => {
                 update[key] = req.body[key];
             }
         }
-        const teacher = await db.Teacher.findOne({teacherID: userId})
+        const teacher = await db.Teacher.findOne({teacherID: userID})
         await teacher.update(update)
         await teacher.save({ fields: keys });
         const result = await teacher.reload();
         return res.status(200).json({data: result, message: "Update teacher information"})
     } catch (err){
-        req.body.teacherID = userId
+        req.body.teacherID = userID
         const result = await db.Teacher.create(req.body)
         return res.status(200).json({data: result, message: "Create new teacher information"})
     }

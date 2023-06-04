@@ -2,45 +2,27 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Teachers', {
+    await queryInterface.createTable('Comments', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      comment: {
+        type: Sequelize.TEXT,
+        allowNull: false
+      },
+      star: {
+        type: Sequelize.FLOAT,
+        allowNull: false
+      },
       teacherID: {
         type: Sequelize.INTEGER,
-        unique: true,
         allowNull: false
       },
-      age: {
+      studentID: {
         type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      level: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      experience: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      sex: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        defaultValue: "male"
-      },
-      price: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      info_link: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      detail: {
-        type: Sequelize.TEXT,
         allowNull: false
       },
       createdAt: {
@@ -54,6 +36,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Teachers');
+    await queryInterface.dropTable('Comments');
   }
 };
