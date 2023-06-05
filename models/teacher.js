@@ -16,11 +16,6 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE', // optional
         onDelete: 'CASCADE',
       })
-      Teacher.hasMany(models.ChatRoom, {
-          foreignKey: 'teacherID',
-          onUpdate: 'CASCADE', // optional
-          onDelete: 'CASCADE',
-      })
       Teacher.hasMany(models.Comment, {
         foreignKey: 'teacherID',
         onUpdate: 'CASCADE', // optional

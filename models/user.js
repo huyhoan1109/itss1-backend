@@ -17,16 +17,6 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE', // optional
         onDelete: 'CASCADE',
       })
-      User.hasMany(models.Chat, {
-        foreignKey: 'userID',
-        onUpdate: 'CASCADE', // optional
-        onDelete: 'CASCADE',
-      })
-      User.hasMany(models.ChatRoom, {
-        foreignKey: 'studentID',
-        onUpdate: 'CASCADE', // optional
-        onDelete: 'CASCADE',
-      })
       User.hasMany(models.Comment, {
         foreignKey: 'studentID',
         onUpdate: 'CASCADE', // optional

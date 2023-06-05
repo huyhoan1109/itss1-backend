@@ -5,6 +5,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors');
 const sequelize = require('./database')
 
+
 sequelize.authenticate().then(() => {
     console.log('Connection has been established successfully.');
 }).catch((error) => {
@@ -20,6 +21,7 @@ const userRoutes = require('./routes/userRoute')
 const adminRoutes = require('./routes/adminRoute')
 const teacherRoutes = require('./routes/teacherRoute')
 const commentRoutes = require('./routes/commentRoute')
+const authRoutes = require('./routes/authRoute')
 
 app.get('/', (req, res) => {
     return res.json({
@@ -28,6 +30,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/', userRoutes)
+app.use('/auth', authRoutes)
 app.use('/admin', adminRoutes)
 app.use('/teacher', teacherRoutes)
 app.use('/comment', commentRoutes)
