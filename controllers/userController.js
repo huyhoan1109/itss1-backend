@@ -1,4 +1,3 @@
-require("dotenv").config()
 const db = require('../models');
 
 const getUser = async (req, res) => {
@@ -22,10 +21,14 @@ const getUser = async (req, res) => {
 
 const postUser = async (req, res) => {
     try {
+        
         const { userID } = req
         const update = {};
         const keys = Object.keys(req.body)
         for (const key of keys){
+            if (key in ('role', 'email')){
+                throw "Can't change this attributes"
+            }
             if (req.body[key] !== '') {
                 update[key] = req.body[key];
             }
@@ -44,8 +47,11 @@ const requestMatch = async (req, res) => {
     try {
         const studentId = req.userID
         const {teacherId, info} = req.body
-        //TODO
-        const data = null
+        const result = db.Matching.create({
+            studentId,
+            teacherId,
+            info
+        })
         return res.status(200).json({data: result})
     } catch {
         return res.status(400).json({success: false, message: "Can't update user information"});
