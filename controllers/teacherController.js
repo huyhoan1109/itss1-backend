@@ -1,23 +1,25 @@
 const db = require('../models');
 const { Op } = require('sequelize');
+const {paginate} = require('../helper')
 
 const filterTeacher = async (req, res) => {
     const filters = req.query
-    let name = filters.name
-    let low_age = filters.low_age
-    let high_age = filters.high_age
-    let level = filters.level
-    let experience = filters.experience
-    let gender = filters.gender
-    let low_price = filters.low_price
-    let high_price = filters.high_price
-    let options = { 
+    const currentPage = filters.page || 1
+    const pageSize = filters.limit || 16
+    const name = filters.name
+    const low_age = filters.low_age
+    const high_age = filters.high_age
+    const level = filters.level
+    const experience = filters.experience
+    const gender = filters.gender
+    const low_price = filters.low_price
+    const high_price = filters.high_price
+    const options = { 
         where: {},
         include: {
             model: db.User
         },
     };
-
     if (name)
         options.where.name = {
             [Op.iLike]: `%${name}%` 
@@ -42,17 +44,26 @@ const filterTeacher = async (req, res) => {
                 [Op.lte]: high_price
             }
         }
-    
-    db.Teacher.findAll(options)
-        .then(async (t_infos) => {
+
+    const {offset, limit} = paginate(currentPage, pageSize)
+
+    db.Teacher.findAndCountAll({...options, offset, limit})
+        .then(async ({count, rows}) => {
             let results = []
-            t_infos.forEach((t_info) => {
+            rows.forEach((t_info) => {
                 let {teacherID, ...rest} = t_info.dataValues
                 let {User, ...teacher_info} = rest
                 let {password, ...user_info} = User.dataValues
                 results.push({...user_info, ...teacher_info})
             })
-            return res.status(200).json({data: results})
+            const totalPages = Math.ceil(count/limit);
+            return res.status(200).json({
+                data: results, 
+                pagination: {
+                    totalPages,
+                    currentPage
+                }
+            })
         })
         .catch(() => {
             return res.status(400).json({success: false, message: "No teacher available"});

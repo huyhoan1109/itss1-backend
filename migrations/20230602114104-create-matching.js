@@ -22,7 +22,7 @@ module.exports = {
         allowNull: false,
         defaultValue: false
       },
-      message: {
+      info: {
         type: Sequelize.TEXT,
         allowNull: false,
       },

@@ -60,7 +60,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 'Ha Noi'
     },
-    imageURL: {
+    avatar: {
       type: DataTypes.STRING,
       allowNull: true
     }
