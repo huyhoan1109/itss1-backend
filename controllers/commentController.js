@@ -70,11 +70,17 @@ const postComment = async (req, res) => {
 
 const delComment = async (req, res) => {
     const id = req.params.id
-    const comment = db.Comment.findOne({id})
-    if (comment.studentID == req.userID){
-        await db.Comment.destroy({
-            where: {id}
-        });
+    try {
+        const comment = db.Comment.findOne({id})
+        if (comment.studentID == req.userID){
+            await db.Comment.destroy({
+                where: {id}
+            });
+        } else {
+            return res.status(400).json({success: false, message: "This is not your comment"});
+        }
+    } catch {
+        return res.status(400).json({success: false, message: "Can't delete comment"});
     }
 }
 

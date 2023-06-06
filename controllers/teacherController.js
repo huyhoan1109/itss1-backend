@@ -2,7 +2,7 @@ const db = require('../models');
 const { Op } = require('sequelize');
 const {paginate} = require('../helper')
 
-const filterTeacher = async (req, res) => {
+const searchTeacher = async (req, res) => {
     const filters = req.query
     const currentPage = filters.page || 1
     const pageSize = filters.limit || 16
@@ -109,7 +109,7 @@ const postTeacher = async (req, res) => {
 }
 
 module.exports = {
-    filterTeacher,
+    searchTeacher,
     infoTeacher,
     postTeacher
 }

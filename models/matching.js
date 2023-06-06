@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
     teacherID: DataTypes.INTEGER,
     studentID: DataTypes.INTEGER,
     status: DataTypes.INTEGER,
-    message: DataTypes.TEXT
+    info: DataTypes.TEXT
   }, {
     sequelize,
     modelName: 'Matching',

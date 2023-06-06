@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Comment.init({
-    comment: {
+    content: {
       type: DataTypes.TEXT,
       allowNull: false
     },

@@ -21,7 +21,6 @@ const getUser = async (req, res) => {
 
 const postUser = async (req, res) => {
     try {
-        
         const { userID } = req
         const update = {};
         const keys = Object.keys(req.body)

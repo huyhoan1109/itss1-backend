@@ -1,9 +1,9 @@
+require('dotenv').config('../.env')
 const db = require('../models');
 const jwt = require("jsonwebtoken");
 
 const signup = async (req, res) => {
     const { email } = req.body;
-    console.log(req.body)
     try {
         if (await db.User.findOne({email})) 
         {
@@ -37,8 +37,9 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
     try {
-        res.clearCookie('x-auth-token');
-        return res.status(200).json({message: "Logout Success"});
+        const id = req.userID
+        const user = db.User.findOne({id})
+        return res.status(200).json({message: `Good bye ${user}`});
     } catch (err) {
         return res.status(400).json({success: false, message: "User authentication failed" });
     }
