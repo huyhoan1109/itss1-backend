@@ -1,13 +1,12 @@
 const { paginate } = require('../helper');
 const db = require('../models')
-const { Op } = require('sequelize');
 
 const getComment = async (req, res) => {
     const teacherID = req.params.id
     const page = req.query.page || 1
     const limit = req.query.limit || 16
     db.Comment.findAndCountAll({
-        where: {teacherID},
+        where: {teacherID: teacherID},
         include: {
             model: db.User
         },
@@ -37,7 +36,7 @@ const createComment = async (req, res) => {
             content: req.body.content,
             star: req.body.star
         })
-        return res.status(200).json({data: result});
+        return res.status(200).json({data: result, message: "Created comment successfuly"});
     } catch {
         return res.status(400).json({success: false, message: "Can't create comment"});
     }
@@ -53,12 +52,12 @@ const postComment = async (req, res) => {
                 update[key] = req.body[key];
             }
         }
-        const comment = await db.Comment.findOne({id})
+        const comment = await db.Comment.findOne({where:{id:id}})
         if (comment.studentID == req.userID){
             await comment.update(update)
             await comment.save({ fields: keys });
             const result = await comment.reload();
-            return res.status(200).json({data: result, message: "Update cpmment information"});
+            return res.status(200).json({data: result, message: "Update comment successfully"});
         }
         else {
             return res.status(400).json({success: false, message: "This is not your comment"});
@@ -71,11 +70,10 @@ const postComment = async (req, res) => {
 const delComment = async (req, res) => {
     const id = req.params.id
     try {
-        const comment = db.Comment.findOne({id})
+        const comment = db.Comment.findOne({where:{id:id}})
         if (comment.studentID == req.userID){
-            await db.Comment.destroy({
-                where: {id}
-            });
+            const result = await db.Comment.destroy({where: {id:id}});
+            return res.status(200).json({data: result, message: "Delete comment successfully"});
         } else {
             return res.status(400).json({success: false, message: "This is not your comment"});
         }

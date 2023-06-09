@@ -14,7 +14,5 @@ router.get('/teacher/:id', authAdmin, adminController.getTeacher)
 router.post('/student/:id', authAdmin, adminController.postStudent)
 router.post('/teacher/:id', authAdmin, adminController.postTeacher)
 
-
-
 module.exports = router;
 

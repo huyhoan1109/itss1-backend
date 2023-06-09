@@ -3,7 +3,7 @@ const db = require('../models');
 const getUser = async (req, res) => {
     try {
         const { userID } = req;
-        const user = await db.User.findOne({id: userID});
+        const user = await db.User.findOne({where:{id: userID}});
         try {
             if (user.role == 'teacher') {
                 const teacher = await db.Teacher.findOne({teacherID: userID});
@@ -32,7 +32,7 @@ const postUser = async (req, res) => {
                 update[key] = req.body[key];
             }
         }
-        const user = await db.User.findOne({id: userID})
+        const user = await db.User.findOne({where:{id: userID}})
         await user.update(update)
         await user.save({ fields: keys });
         const result = await user.reload();
@@ -51,7 +51,7 @@ const requestMatch = async (req, res) => {
             teacherId,
             info
         })
-        return res.status(200).json({data: result})
+        return res.status(200).json({data: result, message: "Created new request"})
     } catch {
         return res.status(400).json({success: false, message: "Can't update user information"});
     }
