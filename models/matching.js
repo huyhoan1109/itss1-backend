@@ -24,10 +24,23 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Matching.init({
-    teacherID: DataTypes.INTEGER,
-    studentID: DataTypes.INTEGER,
-    status: DataTypes.INTEGER,
-    info: DataTypes.TEXT
+    teacherID: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    studentID: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "wait"
+    },
+    info: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    }
   }, {
     sequelize,
     modelName: 'Matching',

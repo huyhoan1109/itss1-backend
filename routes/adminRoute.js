@@ -4,15 +4,9 @@ const {authAdmin} = require("../middlewares/auth");
 const adminController = require('../controllers/adminController');
 
 router.get('/dashboard', authAdmin, adminController.dashboard)
-
-router.get('/student', authAdmin, adminController.allStudent)
-router.get('/teacher', authAdmin, adminController.allTeacher)
-
-router.get('/student/:id', authAdmin, adminController.getStudent)
-router.get('/teacher/:id', authAdmin, adminController.getTeacher)
-
-router.post('/student/:id', authAdmin, adminController.postStudent)
-router.post('/teacher/:id', authAdmin, adminController.postTeacher)
+router.get('/user', authAdmin, adminController.allUser)
+router.get('/user/:id', authAdmin, adminController.getUser)
+router.post('/user/:id', authAdmin, adminController.postUser)
 
 module.exports = router;
 

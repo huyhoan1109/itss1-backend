@@ -18,13 +18,13 @@ module.exports = {
         allowNull: false,
       },
       status: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.STRING,
         allowNull: false,
-        defaultValue: false
+        defaultValue: "wait"
       },
       info: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: true,
       },
       createdAt: {
         allowNull: false,

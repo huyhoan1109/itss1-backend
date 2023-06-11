@@ -19,7 +19,21 @@ const getComment = async (req, res) => {
             let {password, ...user_info} = User.dataValues
             results.push({...user_info, ...content})
         })
-        return res.status(200).json({data: results});
+        let totalPages = Math.ceil(count/limit)
+        
+        let message = ''
+        if (count > 1) message = `Finded ${count} comments`
+        else message = `Finded ${count} comment`
+        
+        return res.status(200).json({
+            data: results,
+            infoPage: {
+                totalPages,
+                currentPage: page,
+                pageSize: limit
+            },
+            message
+        });
     }).catch(() => {
         return res.status(400).json({success: false, message: "No comment available"});
     })
@@ -36,7 +50,7 @@ const createComment = async (req, res) => {
             content: req.body.content,
             star: req.body.star
         })
-        return res.status(200).json({data: result, message: "Created comment successfuly"});
+        return res.status(200).json({data: result, message: "Created comment successfully"});
     } catch {
         return res.status(400).json({success: false, message: "Can't create comment"});
     }

@@ -82,7 +82,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     teach_method1: {
-      type: DataTypes.TEXT,
+      type: DataTypes.TEXT, // teach_method = online, offline1, offline2
       allowNull: false
     },
     teach_method2: {
