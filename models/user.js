@@ -18,12 +18,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
       })
       User.hasMany(models.Comment, {
-        foreignKey: 'studentID',
+        foreignKey: 'userID',
         onUpdate: 'CASCADE', // optional
         onDelete: 'CASCADE',
       })
       User.hasMany(models.Evaluate, {
-        foreignKey: 'studentID',
+        foreignKey: 'userID',
         onUpdate: 'CASCADE', // optional
         onDelete: 'CASCADE',
       })

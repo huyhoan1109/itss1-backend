@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Comment.belongsTo(models.User, {
-        foreignKey: 'studentID',
+        foreignKey: 'userID',
         onUpdate: 'CASCADE', // optional
         onDelete: 'CASCADE',
       });
@@ -36,7 +36,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    studentID: {
+    userID: {
       type: DataTypes.INTEGER,
       allowNull: false
     }

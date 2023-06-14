@@ -27,7 +27,7 @@ const StudentList = async (req, res) => {
     }).then(({count, rows}) => {
         let results = []
         rows.forEach((info) => {
-            let {teacherID, studentID, ...rest} = info.dataValues
+            let {teacherID, userID, ...rest} = info.dataValues
             let {User, ...content} = rest
             let {password, ...user_info} = User.dataValues
             results.push({...user_info, ...content})

@@ -11,7 +11,7 @@ module.exports = {
      */
 
     await queryInterface.addConstraint('Matchings', {
-      fields: ['studentID'],
+      fields: ['userID'],
       type: 'foreign key',
       name: 'student_match_association',
       references: {
@@ -56,7 +56,7 @@ module.exports = {
     // })
 
     // queryInterface.removeConstraint('Matchings', {
-    //   fields: ['studentID'],
+    //   fields: ['userID'],
     //   type: ['foreign key'],
     //   name: 'student_match_association',
     //   references: {

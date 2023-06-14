@@ -10,9 +10,9 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
     await queryInterface.addConstraint('Comments', {
-      fields: ['studentID'],
+      fields: ['userID'],
       type: 'foreign key',
-      name: 'student_comment_association',
+      name: 'user_comment_association',
       references: {
         table: 'Users',
         field: 'id',

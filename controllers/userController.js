@@ -49,10 +49,10 @@ const postUser = async (req, res) => {
 
 const requestMatch = async (req, res) => {
     try {
-        const studentId = req.userID
+        const userID = req.userID
         const {teacherId, info} = req.body
         const result = db.Matching.create({
-            studentId,
+            userID,
             teacherId,
             info
         })

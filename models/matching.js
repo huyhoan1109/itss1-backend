@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
       });
       Matching.belongsTo(models.User, {
-        foreignKey: 'studentID',
+        foreignKey: 'userID',
         onUpdate: 'CASCADE', // optional
         onDelete: 'CASCADE',
       });
@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    studentID: {
+    userID: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
