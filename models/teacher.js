@@ -26,6 +26,11 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE', // optional
         onDelete: 'CASCADE',
       })
+      Teacher.hasMany(models.Scheduler, {
+        foreignKey: 'teacherID',
+        onUpdate: 'CASCADE', // optional
+        onDelete: 'CASCADE',
+      })
     }
   }
   Teacher.init({
@@ -88,7 +93,15 @@ module.exports = (sequelize, DataTypes) => {
     teach_method2: {
       type: DataTypes.TEXT,
       allowNull: true
-    }
+    },
+    lat: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    lng: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
   }, {
     sequelize,
     modelName: 'Teacher',

@@ -55,12 +55,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 'student'
     },
-    address: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: 'Ha Noi'
-    },
     avatar: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    address: {
       type: DataTypes.STRING,
       allowNull: true
     },

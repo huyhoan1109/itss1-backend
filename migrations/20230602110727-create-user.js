@@ -31,14 +31,14 @@ module.exports = {
         allowNull: false,
         defaultValue: 'student'
       },
-      address: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        defaultValue: 'Ha Noi'
-      },
       avatar: {
         type: Sequelize.STRING,
         allowNull: true
+      },
+      address: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: "Ha Noi"
       },
       isBlock: {
         type: Sequelize.BOOLEAN,

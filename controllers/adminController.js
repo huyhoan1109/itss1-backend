@@ -44,7 +44,7 @@ const getUser = async (req, res) => {
         const {password, ...user_info} = user.dataValues
         try {
             if (user.role == 'teacher') {
-                const teacher = await db.Teacher.findOne({teacherID: userID});
+                const teacher = await db.Teacher.findOne({where:{teacherID: userID}});
                 let {teacherID, ...teacher_info} = teacher.dataValues
                 result = {...user_info, ...teacher_info}
             }

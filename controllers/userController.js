@@ -1,15 +1,17 @@
 const db = require('../models');
-const { Op } = require('sequelize');
-const { paginate } = require('../helper')
+const { Op, where } = require('sequelize');
+const { paginate } = require('../helper');
+const scheduler = require('../models/scheduler');
 
 const getUser = async (req, res) => {
     try {
         const { userID } = req;
+        console.log(userID)
         const user = await db.User.findOne({where:{id: userID}});
         const {password, ...user_info} = user.dataValues
         try {
             if (user.role == 'teacher') {
-                const teacher = await db.Teacher.findOne({teacherID: userID});
+                const teacher = await db.Teacher.findOne({where:{teacherID: userID}});
                 let {teacherID, ...teacher_info} = teacher.dataValues
                 result = {...user_info, ...teacher_info}
             }
@@ -75,13 +77,14 @@ const searchTeacher = async (req, res) => {
     const teach_method = filters.teach_method
     const options = { 
         where: {},
-        include: {
-            model: db.User,
-            where: {}
-        }
+        include: [
+            {model: db.User,where: {}},
+            {model: db.Scheduler,where: {}},
+        ],
+        distinct: true
     };
     if (name)
-        options.include.where.name = {
+        options.include[0].where.name = {
             [Op.regexp]: `(?i)^.*${name}.*$`
         }
 
@@ -116,6 +119,7 @@ const searchTeacher = async (req, res) => {
                 }
             }
         } 
+
     const {offset, limit} = paginate(currentPage, pageSize)
 
     db.Teacher.findAndCountAll({...options, offset, limit})
@@ -123,10 +127,15 @@ const searchTeacher = async (req, res) => {
             let results = []
             const totalPages = Math.ceil(count/limit);
             rows.forEach((t_info) => {
-                let {teacherID, ...rest} = t_info.dataValues
-                let {User, ...teacher_info} = rest
+                let schedulers = []
+                let {teacherID, ...t_rest} = t_info.dataValues
+                let {User, ...rest} = t_rest
                 let {password, ...user_info} = User.dataValues
-                results.push({...user_info, ...teacher_info})
+                let {Schedulers, ...teacher_info} = rest
+                Schedulers.forEach((value) => {
+                    schedulers.push(value.dataValues)
+                })
+                results.push({...user_info, ...teacher_info, schedulers})
             })            
 
             let message = ''
