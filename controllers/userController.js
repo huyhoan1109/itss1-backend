@@ -1,24 +1,21 @@
 const db = require('../models');
-const { Op, where } = require('sequelize');
+const { Op } = require('sequelize');
 const { paginate } = require('../helper');
-const scheduler = require('../models/scheduler');
 
 const getUser = async (req, res) => {
     try {
         const { userID } = req;
-        console.log(userID)
         const user = await db.User.findOne({where:{id: userID}});
         const {password, ...user_info} = user.dataValues
-        try {
-            if (user.role == 'teacher') {
-                const teacher = await db.Teacher.findOne({where:{teacherID: userID}});
-                let {teacherID, ...teacher_info} = teacher.dataValues
-                result = {...user_info, ...teacher_info}
-            }
-        } catch {
-            result = user_info
+        if (user.role == 'teacher') {
+            const teacher = await db.Teacher.findOne({where:{teacherID: userID}});
+            let {teacherID, ...teacher_info} = teacher.dataValues
+            let result = {...user_info, ...teacher_info}
+            return res.status(200).json({data: result})
+        } else {
+            let result = user_info
+            return res.status(200).json({data: result})
         }
-        return res.status(200).json({data: result})
     } catch (err) {
         return res.status(400).json({success:false, message: "Can't get user information" });
     }
@@ -30,7 +27,7 @@ const postUser = async (req, res) => {
         const update = {};
         const keys = Object.keys(req.body)
         for (const key of keys){
-            if (key in ('role', 'email')){
+            if (key == 'role' || key == 'email'){
                 throw "Can't change this attributes"
             }
             if (req.body[key] !== '') {
@@ -47,16 +44,101 @@ const postUser = async (req, res) => {
     }      
 };
 
+const getMatch = async (req, res) => {
+    const {userID} = req
+    const page = req.query.page || 1
+    const limit = req.query.limit || 16
+    const user = await db.User.findOne({where: {id: userID}})
+    if (user.role == 'teacher') {
+        db.Matching.findAndCountAll({
+            where: {teacherID: userID},
+            include: {
+                model: db.User
+            },
+            order: [['createdAt', 'DESC']],
+            ...paginate(page, limit)
+        }).then(({count, rows}) => {
+            let results = []
+            rows.forEach((info) => {
+                let {teacherID, userID, ...rest} = info.dataValues
+                let {User, ...content} = rest
+                let {id, password, ...user_info} = User.dataValues
+                results.push({...user_info, ...content})
+            })
+            let totalPages = Math.ceil(count/limit)   
+            return res.status(200).json({
+                data: results,
+                infoPage: {
+                    totalPages,
+                    currentPage: page,
+                    pageSize: limit
+                },
+            });
+        }).catch(() => {
+            return res.status(400).json({success: false, message: "No match available"});
+        })
+    } else {
+        db.Matching.findAndCountAll({
+            where: {userID: userID},
+            include: {
+                model: db.Teacher,
+                include: {
+                    model: db.User
+                }
+            },
+            ...paginate(page, limit)
+        }).then(({count, rows}) => {
+            let results = []
+            rows.forEach((info) => {
+                let {teacherID, userID, ...rest} = info.dataValues
+                let {Teacher, ...content} = rest
+                let {User, ...teacher_info} = Teacher.dataValues
+                let {id, password, ...user_info} = User.dataValues
+                results.push({...user_info, ...teacher_info, ...content})
+            })
+            let totalPages = Math.ceil(count/limit)
+            let infoPage = {
+                totalPages,
+                currentPage: page,
+                pageSize: limit
+            }
+            return res.status(200).json({
+                data: results,
+                infoPage
+            });
+        })
+        .catch(() => {
+            return res.status(400).json({success: false, message: "No match available"});
+        })
+    }
+}
+
 const requestMatch = async (req, res) => {
     try {
         const userID = req.userID
-        const {teacherId, info} = req.body
-        const result = db.Matching.create({
-            userID,
-            teacherId,
-            info
-        })
-        return res.status(200).json({data: result, message: "Created new request"})
+        const {teacherID, info} = req.body
+        const user = await db.User.findOne({where: {id: userID}})
+        if (userID != teacherID && user.role == 'student') {
+            const result = await db.Matching.create({
+                userID,
+                teacherID,
+                info
+            })
+            return res.status(200).json({data: result, message: "Created new request"})
+        } else {
+            return res.status(400).json({success: false, message: "Can't request yourself"});
+        }
+    } catch {
+        return res.status(400).json({success: false, message: "Can't update user information"});
+    }
+}
+
+const infoMatch = async (req, res) => {
+    try {
+        const userID = req.userID
+        const teacherID = req.params.id
+        const result = await db.Matching.findOne({where: {userID: userID, teacherID: teacherID}})
+        return res.status(200).json({data: result, message: "Your request has been sent to the tutor"})
     } catch {
         return res.status(400).json({success: false, message: "Can't update user information"});
     }
@@ -79,7 +161,7 @@ const searchTeacher = async (req, res) => {
         where: {},
         include: [
             {model: db.User,where: {}},
-            {model: db.Scheduler,where: {}},
+            // {model: db.Scheduler,where: {}},
         ],
         distinct: true
     };
@@ -100,7 +182,7 @@ const searchTeacher = async (req, res) => {
     if (experience)
         options.where.experience = experience
     if (gender)
-        options.where.gender = gender
+        options.include[0].where.gender = gender
     if (low_price && high_price)
         options.where.price = {
             [Op.and]:{
@@ -116,50 +198,59 @@ const searchTeacher = async (req, res) => {
                 },
                 teach_method2: {
                     [Op.regexp]: `(?i)${teach_method}`
+                },
+                teach_method3: {
+                    [Op.regexp]: `(?i)${teach_method}`
                 }
             }
         } 
 
     const {offset, limit} = paginate(currentPage, pageSize)
 
-    db.Teacher.findAndCountAll({...options, offset, limit})
-        .then(async ({count, rows}) => {
-            let results = []
-            const totalPages = Math.ceil(count/limit);
-            rows.forEach((t_info) => {
-                let schedulers = []
-                let {teacherID, ...t_rest} = t_info.dataValues
-                let {User, ...rest} = t_rest
-                let {password, ...user_info} = User.dataValues
-                let {Schedulers, ...teacher_info} = rest
-                Schedulers.forEach((value) => {
-                    schedulers.push(value.dataValues)
-                })
-                results.push({...user_info, ...teacher_info, schedulers})
-            })            
+    db.Teacher.findAndCountAll({
+        ...options,
+        order: [['createdAt', 'DESC']],
+        offset,
+        limit
+    }).then(({count, rows}) => {
+        let results = []
+        const totalPages = Math.ceil(count/limit);
+        rows.forEach((t_info) => {
+            // let schedulers = []
+            let {User, ...rest} = t_info.dataValues
+            let {password, ...user_info} = User.dataValues
+            let {Schedulers, ...teacher_info} = rest
+            // Schedulers.forEach((value) => {
+            //     schedulers.push(value.dataValues)
+            // })
+            // results.push({...user_info, ...teacher_info, schedulers})
+            results.push({...user_info, ...teacher_info})
+        })            
 
-            let message = ''
-            if (count > 1) message = `Finded ${count} results`
-            else message = `Finded ${count} result`
-            
-            return res.status(200).json({
-                data: results, 
-                infoPage: {
-                    totalPages,
-                    currentPage,
-                    pageSize
-                },
-                message
-            })
+        let message = ''
+        if (count > 1) message = `Finded ${count} results`
+        else message = `Finded ${count} result`
+        
+        return res.status(200).json({
+            data: results, 
+            infoPage: {
+                totalPages,
+                currentPage,
+                pageSize
+            },
+            message
         })
-        .catch(() => {
-            return res.status(400).json({success: false, message: "No teacher available"});
-        })
+    })
+    .catch(() => {
+        return res.status(400).json({success: false, message: "No teacher available"});
+    })
 }
 
 module.exports = {
     getUser,
     postUser,
     searchTeacher,
-    requestMatch
+    requestMatch,
+    infoMatch,
+    getMatch
 }

@@ -26,11 +26,6 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       },
-      gender: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        defaultValue: "male"
-      },
       price: {
         type: Sequelize.INTEGER,
         allowNull: false
@@ -64,16 +59,12 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true
       },
+      teach_method3: {
+        type: Sequelize.TEXT,
+        allowNull: true
+      },
       detail: {
         type: Sequelize.TEXT,
-        allowNull: false
-      },
-      lat: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      lng: {
-        type: Sequelize.STRING,
         allowNull: false
       },
       createdAt: {

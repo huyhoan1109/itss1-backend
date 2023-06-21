@@ -31,6 +31,11 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE', // optional
         onDelete: 'CASCADE',
       })
+      Teacher.hasMany(models.Matching, {
+        foreignKey: 'teacherID',
+        onUpdate: 'CASCADE', // optional
+        onDelete: 'CASCADE',
+      })
     }
   }
   Teacher.init({
@@ -51,11 +56,6 @@ module.exports = (sequelize, DataTypes) => {
     experience: {
       type: DataTypes.INTEGER,
       allowNull: false
-    },
-    gender: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: "male"
     },
     price: {
       type:DataTypes.INTEGER,
@@ -94,14 +94,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    lat: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    lng: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
+    teach_method3: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    }
   }, {
     sequelize,
     modelName: 'Teacher',

@@ -40,6 +40,19 @@ module.exports = {
         allowNull: false,
         defaultValue: "Ha Noi"
       },
+      gender: {
+        type: Sequelize.STRING,
+        allowNull: true,
+        defaultValue: "male"
+      },
+      lat: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      lng: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       isBlock: {
         type: Sequelize.BOOLEAN,
         allowNull: false,

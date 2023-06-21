@@ -15,10 +15,9 @@ const getComment = async (req, res) => {
         limit,
         distinct: true
     }).then(({count, rows}) => {
-        console.log(rows)
         let results = []
         rows.forEach((info) => {
-            let {userID, teacherID, ...rest} = info.dataValues
+            let {teacherID, ...rest} = info.dataValues
             let {User, ...content} = rest
             let {password, ...user_info} = User.dataValues
             results.push({...user_info, ...content})
@@ -41,13 +40,9 @@ const getComment = async (req, res) => {
     }).catch(() => {
         return res.status(400).json({success: false, message: "No comment available"});
     })
-    let find = await db.Comment.findOne({where: {teacherID: teacherID}})
-    console.log(find)
 }
 
 const createComment = async (req, res) => {
-    console.log("this")
-    console.log(req.body)
     const teacherID = req.params.id
     const userID = req.userID
     try {
@@ -91,9 +86,9 @@ const postComment = async (req, res) => {
 const delComment = async (req, res) => {
     const id = req.params.id
     try {
-        const comment = db.Comment.findOne({where:{id:id}})
-        if (comment.userID == req.userID){
-            const result = await db.Comment.destroy({where: {id:id}});
+        const comment = await db.Comment.findOne({where:{id:id}})
+        if (comment.dataValues.userID == req.userID){
+            const result = await db.Comment.destroy({where: {id:id}, force: true});
             return res.status(200).json({data: result, message: "Delete comment successfully"});
         } else {
             return res.status(400).json({success: false, message: "This is not your comment"});

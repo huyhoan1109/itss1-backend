@@ -35,6 +35,6 @@ app.use('/admin', adminRoutes)
 app.use('/teacher', teacherRoutes)
 app.use('/comment', commentRoutes)
 
-app.listen(5000, () => {
-    console.log("Server is listening on port 5000")
+app.listen(5050, () => {
+    console.log("Server is listening on port 5050")
 })

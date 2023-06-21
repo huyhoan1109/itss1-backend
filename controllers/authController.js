@@ -1,7 +1,7 @@
 require('dotenv').config('../.env')
 const db = require('../models');
 const jwt = require("jsonwebtoken");
-
+const ms = require("ms")
 const signup = async (req, res) => {
     const { email } = req.body;
     try {
@@ -30,11 +30,13 @@ const login = async (req, res) => {
         let token = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: process.env.JWT_TIMEOUT
         })
+        let timeout = ms(process.env.JWT_TIMEOUT)
         let {password, ...user_info} = user.dataValues 
         return res.status(200).json({
             data: {
                 user: user_info,
                 access_token: token, 
+                timeout
             },
             message: `Welcome ${user.name}`
         });

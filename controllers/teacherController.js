@@ -1,4 +1,5 @@
 const db = require('../models');
+const {paginate} = require('../helper')
 
 const infoTeacher = async (req, res) => {
     try {
@@ -29,7 +30,7 @@ const StudentList = async (req, res) => {
         rows.forEach((info) => {
             let {teacherID, userID, ...rest} = info.dataValues
             let {User, ...content} = rest
-            let {password, ...user_info} = User.dataValues
+            let {id, password, ...user_info} = User.dataValues
             results.push({...user_info, ...content})
         })
         let totalPages = Math.ceil(count/limit)
@@ -48,7 +49,7 @@ const StudentList = async (req, res) => {
             message
         });
     }).catch(() => {
-        return res.status(400).json({success: false, message: "No comment available"});
+        return res.status(400).json({success: false, message: "No match available"});
     })
 }
 
@@ -56,10 +57,10 @@ const postTeacher = async (req, res) => {
     const { userID } = req
     try {
         const t_update = {};
-        const t_keys = Object.keys(req.body.teacher)
+        const t_keys = Object.keys(req.body.teacher_info)
         for (const key of t_keys){
-            if (req.body[key] !== '') {
-                t_update[key] = req.body.teacher[key];
+            if (req.body.teacher_info[key] !== '') {
+                t_update[key] = req.body.teacher_info[key];
             }
         }
         const teacher = await db.Teacher.findOne({where:{teacherID: userID}})
@@ -67,18 +68,19 @@ const postTeacher = async (req, res) => {
         await teacher.save({ fields: t_keys });
         const t_result = await teacher.reload();
         if (req?.body?.schedulers){
-            let sch_result = []
-            await db.Scheduler.destroy({where: {teacherID: userID}, force: true})
-            schedulers.map(async (value) => {
-                let newsch = await db.Scheduler.create(value)
-                sch_result.push(newsch.dataValues)
-            })
+            // let sch_result = []
+            // await db.Scheduler.destroy({where: {teacherID: userID}, force: true})
+            // schedulers.map(async (value) => {
+            //     let newsch = await db.Scheduler.create(value)
+            //     sch_result.push(newsch.dataValues)
+            // })
+            return res.status(200).json({data: {teacher: t_result.dataValues}, message: "Update teacher information"})
         } else {
             return res.status(200).json({data: {teacher: t_result.dataValues}, message: "Update teacher information"})
         }
     } catch (err){
-        req.body.teacherID = userID
-        const result = await db.Teacher.create(req.body)
+        req.body.teacher_info.teacherID = userID
+        const result = await db.Teacher.create(req.body.teacher_info)
         return res.status(200).json({data: result, message: "Create new teacher information"})
     }
 }
@@ -88,14 +90,15 @@ const updateMatch = async(req, res) => {
     try {
         const match_id = req.body.match_id
         const status = req.body.status
-        // status : "wait", "refuse", "agree"
-        if (status == 'wait'){
-            const match = await db.Matching.findOne({where:{id: match_id}})
+        // status : "wait", "refuse", "approve"
+        const match = await db.Matching.findOne({where:{id: match_id}})
+        if (match.dataValues.status == 'wait') {
             await match.update({status: status})
             await match.save({ fields: ['status'] });
             const result = await match.reload();
             return res.status(200).json({data: result, message: "Update matching request"})
-        } else {
+        }
+        else{
             return res.status(400).json({success: false, message: "You can't change this status any more"})
         }
     } catch (err){

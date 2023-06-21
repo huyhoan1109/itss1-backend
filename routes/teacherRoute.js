@@ -6,6 +6,7 @@ const teacherController = require('../controllers/teacherController')
 router.get('/info/:id', teacherController.infoTeacher)
 router.get('/students', authTeacher, teacherController.StudentList)
 router.post('/your/info', authTeacher, teacherController.postTeacher)
+router.post('/matching', authTeacher, teacherController.updateMatch)
 
 module.exports = router;
 

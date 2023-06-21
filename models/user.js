@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE', // optional
         onDelete: 'CASCADE',
       })
-      User.hasMany(models.Comment, {
+      User.hasMany(models.Matching, {
         foreignKey: 'userID',
         onUpdate: 'CASCADE', // optional
         onDelete: 'CASCADE',
@@ -60,6 +60,19 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     address: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    gender: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "male"
+    },
+    lat: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    lng: {
       type: DataTypes.STRING,
       allowNull: true
     },
