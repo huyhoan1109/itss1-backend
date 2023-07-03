@@ -28,9 +28,9 @@ const login = async (req, res) => {
             return res.status(400).json({success: false, message:"Invalid password"});
         }
         let token = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET, {
-            expiresIn: process.env.JWT_TIMEOUT
+            expiresIn: process.env.TOKEN_TIMEOUT
         })
-        let timeout = ms(process.env.JWT_TIMEOUT)
+        let timeout = ms(process.env.TOKEN_TIMEOUT)
         let {password, ...user_info} = user.dataValues 
         return res.status(200).json({
             data: {

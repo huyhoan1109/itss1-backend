@@ -1,32 +1,33 @@
 const db = require('../models')
-
+const {paginate} = require('../helper')
 const dashboard = async (req, res) => {
     
 };
 
 const allUser = async (req, res) => {
-
-    const page = req.query.page || 1
-    const limit = req.query.limit || 16
-
+    const currentPage = req.query.page || 1
+    const pageSize = req.query.limit || 16
+    const options ={ 
+        where: {}
+    }
+    const {offset, limit} = paginate(currentPage, pageSize)
     db.User.findAndCountAll({...options, offset, limit})
         .then(async ({count, rows}) => {
             let results = []
             const totalPages = Math.ceil(count/limit);
             rows.forEach((user) => {
-                let {password, ...info} = user.dataValues
+                let {password, otp, ...info} = user.dataValues
                 results.push(info)
             })            
-
             let message = ''
             if (count > 1) message = `Finded ${count} results`
             else message = `Finded ${count} result`
-            
+            console.log(results)
             return res.status(200).json({
                 data: results, 
                 infoPage: {
                     totalPages,
-                    currentPage: page,
+                    currentPage,
                     pageSize: limit
                 },
                 message
@@ -81,9 +82,84 @@ const postUser = async (req, res) => {
     }
 };
 
+const allStudent = async (req, res) => {
+    const currentPage = req.query.page || 1
+    const pageSize = req.query.limit || 16
+    const options ={ 
+        where: {
+            role: 'student'
+        }
+    }
+    const {offset, limit} = paginate(currentPage, pageSize)
+    db.User.findAndCountAll({...options, offset, limit})
+        .then(async ({count, rows}) => {
+            let results = []
+            const totalPages = Math.ceil(count/limit);
+            rows.forEach((user) => {
+                let {password, otp, ...info} = user.dataValues
+                results.push(info)
+            })            
+            let message = ''
+            if (count > 1) message = `Finded ${count} results`
+            else message = `Finded ${count} result`
+            console.log(results)
+            return res.status(200).json({
+                data: results, 
+                infoPage: {
+                    totalPages,
+                    currentPage,
+                    pageSize: limit
+                },
+                message
+            })
+        })
+        .catch(() => {
+            return res.status(400).json({success: false, message: "No teacher available"});
+        })
+}
+
+const allTeacher = async (req, res) => {
+    const currentPage = req.query.page || 1
+    const pageSize = req.query.limit || 16
+    const options ={ 
+        include: {
+            model: db.User
+        }
+    }
+    const {offset, limit} = paginate(currentPage, pageSize)
+    db.Teacher.findAndCountAll({...options, offset, limit})
+        .then(({count, rows}) => {
+            let results = []
+            const totalPages = Math.ceil(count/limit);
+            rows.forEach((teacher) => {
+                let {User, ...teacher_info} = teacher.dataValues
+                let {password, otp, ...user_info} = User.dataValues
+                results.push({...user_info, ...teacher_info})
+            })            
+            let message = ''
+            if (count > 1) message = `Finded ${count} results`
+            else message = `Finded ${count} result`
+            console.log(results)
+            return res.status(200).json({
+                data: results, 
+                infoPage: {
+                    totalPages,
+                    currentPage,
+                    pageSize: limit
+                },
+                message
+            })
+        })
+        .catch(() => {
+            return res.status(400).json({success: false, message: "No teacher available"});
+        })
+}
+
 module.exports = {
     dashboard,
     allUser,
     getUser,
-    postUser
+    postUser,
+    allStudent,
+    allTeacher
 }

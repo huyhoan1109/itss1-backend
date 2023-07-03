@@ -58,6 +58,10 @@ module.exports = {
         allowNull: false,
         defaultValue: false
       },
+      otp: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

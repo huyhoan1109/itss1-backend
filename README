@@ -11,7 +11,7 @@ Tạo file .env tự config:
     DB_PASSWORD="password"
     REFRESH_TOKEN_SECRET=""
     ACCESS_TOKEN_SECRET=""
-    JWT_TIMEOUT="1h"
+    TOKEN_TIMEOUT="1h"
 
 Tạo sequelize-cli:
     npx sequelize-cli init

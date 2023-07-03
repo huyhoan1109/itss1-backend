@@ -1,21 +1,17 @@
+require("dotenv").config()
 const db = require('../models');
 const { Op } = require('sequelize');
-const { paginate } = require('../helper');
+const { paginate, transporter } = require('../helper');
+const jwt = require("jsonwebtoken");
+const OTP = require('otp-generator')
 
 const getUser = async (req, res) => {
     try {
         const { userID } = req;
         const user = await db.User.findOne({where:{id: userID}});
         const {password, ...user_info} = user.dataValues
-        if (user.role == 'teacher') {
-            const teacher = await db.Teacher.findOne({where:{teacherID: userID}});
-            let {teacherID, ...teacher_info} = teacher.dataValues
-            let result = {...user_info, ...teacher_info}
-            return res.status(200).json({data: result})
-        } else {
-            let result = user_info
-            return res.status(200).json({data: result})
-        }
+        let result = user_info
+        return res.status(200).json({data: result})
     } catch (err) {
         return res.status(400).json({success:false, message: "Can't get user information" });
     }
@@ -161,7 +157,7 @@ const searchTeacher = async (req, res) => {
         where: {},
         include: [
             {model: db.User,where: {}},
-            // {model: db.Scheduler,where: {}},
+            {model: db.Scheduler,where: {}},
         ],
         distinct: true
     };
@@ -211,20 +207,20 @@ const searchTeacher = async (req, res) => {
         ...options,
         order: [['createdAt', 'DESC']],
         offset,
-        limit
+        limit,
+        distinct: true
     }).then(({count, rows}) => {
         let results = []
         const totalPages = Math.ceil(count/limit);
         rows.forEach((t_info) => {
-            // let schedulers = []
+            let schedulers = []
             let {User, ...rest} = t_info.dataValues
             let {password, ...user_info} = User.dataValues
             let {Schedulers, ...teacher_info} = rest
-            // Schedulers.forEach((value) => {
-            //     schedulers.push(value.dataValues)
-            // })
-            // results.push({...user_info, ...teacher_info, schedulers})
-            results.push({...user_info, ...teacher_info})
+            Schedulers.forEach((value) => {
+                schedulers.push(value.dataValues)
+            })
+            results.push({...user_info, ...teacher_info, schedulers})
         })            
 
         let message = ''
@@ -246,11 +242,53 @@ const searchTeacher = async (req, res) => {
     })
 }
 
+const sendOtp = async (req, res) => {
+    try {
+        const {email} = req.body
+        console.log(email)
+        const user = await db.User.findOne({where: {email: email}})
+        let otp = OTP.generate(6, {
+            lowerCaseAlphabets: false,
+            upperCaseAlphabets: false,
+            specialChars: false
+        })
+        let jwt_otp = jwt.sign({otp: otp}, process.env.OTP_SECRET, {
+            expiresIn: process.env.OTP_TIMEOUT
+        })
+        await user.update({otp: jwt_otp})
+        await user.save()
+        
+        var mailOptions = {
+            from: process.env.GMAIL_USER,
+            to: email,
+            subject: 'Sagasuy Email',
+            text: `${otp}`
+        };
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+        return res.status(200).json({data: user}) 
+    } catch {
+        return res.status(400).json({success: false, message: "Error"}) 
+    }
+}
+
+const checkOtp = async (req, res) => {
+
+}
+
 module.exports = {
     getUser,
     postUser,
     searchTeacher,
     requestMatch,
     infoMatch,
-    getMatch
+    getMatch,
+    sendOtp,
+    checkOtp
 }

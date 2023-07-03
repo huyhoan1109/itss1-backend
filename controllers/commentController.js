@@ -52,6 +52,11 @@ const createComment = async (req, res) => {
             content: req.body.content,
             star: req.body.star
         })
+        const sum_stars = await db.Comment.sum('star', {where: {teacherID: teacherID}})
+        const comments_length = await db.Comment.count({where: {teacherID: teacherID}})
+        const teacher = await db.Teacher.findOne({where: {teacherID: teacherID}})
+        await teacher.update({star_average: comments_length > 0 ? sum_stars / comments_length : 0})
+        await teacher.save({ fields: ['star_average'] });
         return res.status(200).json({data: result, message: "Created comment successfully"});
     } catch {
         return res.status(400).json({success: false, message: "Can't create comment"});
@@ -73,6 +78,11 @@ const postComment = async (req, res) => {
             await comment.update(update)
             await comment.save({ fields: keys });
             const result = await comment.reload();
+            const sum_stars = await db.Comment.sum('star', {where: {teacherID: comment.teacherID}})
+            const comments_length = await db.Comment.count({where: {teacherID: comment.teacherID}})
+            const teacher = await db.Teacher.findOne({where: {teacherID: comment.teacherID}})
+            await teacher.update({star_average: comments_length > 0 ? sum_stars / comments_length : 0})
+            await teacher.save({ fields: ['star_average'] });
             return res.status(200).json({data: result, message: "Update comment successfully"});
         }
         else {
@@ -87,8 +97,14 @@ const delComment = async (req, res) => {
     const id = req.params.id
     try {
         const comment = await db.Comment.findOne({where:{id:id}})
+        const teacherID = comment.teacherID
         if (comment.dataValues.userID == req.userID){
             const result = await db.Comment.destroy({where: {id:id}, force: true});
+            const sum_stars = await db.Comment.sum('star', {where: {teacherID: teacherID}})
+            const comments_length = await db.Comment.count({where: {teacherID: teacherID}})
+            const teacher = await db.Teacher.findOne({where: {teacherID: teacherID}})
+            await teacher.update({star_average: comments_length > 0 ? sum_stars / comments_length : 0})
+            await teacher.save({ fields: ['star_average'] });
             return res.status(200).json({data: result, message: "Delete comment successfully"});
         } else {
             return res.status(400).json({success: false, message: "This is not your comment"});

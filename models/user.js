@@ -80,6 +80,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0
+    },
+    otp: {
+      type: DataTypes.STRING,
+      allowNull: true,
     }
   }, {
     sequelize,

@@ -56,6 +56,19 @@ const StudentList = async (req, res) => {
 const postTeacher = async (req, res) => {
     const { userID } = req
     try {
+        console.log(req.body)
+        const u_update = {};
+        const u_keys = Object.keys(req.body.user_info)
+        for (const key of u_keys){
+            if (req.body.user_info[key] !== '') {
+                u_update[key] = req.body.user_info[key];
+            }
+        }
+        const user = await db.User.findOne({where:{id: userID}})
+        await user.update(u_update)
+        await user.save({ fields: u_keys });
+        const u_result = await user.reload();
+
         const t_update = {};
         const t_keys = Object.keys(req.body.teacher_info)
         for (const key of t_keys){
@@ -63,20 +76,31 @@ const postTeacher = async (req, res) => {
                 t_update[key] = req.body.teacher_info[key];
             }
         }
+
         const teacher = await db.Teacher.findOne({where:{teacherID: userID}})
         await teacher.update(t_update)
         await teacher.save({ fields: t_keys });
         const t_result = await teacher.reload();
+
+        const sum_stars = await db.Comment.sum('star', {where: {teacherID: userID}})
+        const comments_length = await db.Comment.count({where: {teacherID: userID}})
+        await teacher.update({star_average: comments_length > 0 ? sum_stars / comments_length : 0})
+        await teacher.save({ fields: ['star_average'] });
+
         if (req?.body?.schedulers){
-            // let sch_result = []
-            // await db.Scheduler.destroy({where: {teacherID: userID}, force: true})
-            // schedulers.map(async (value) => {
-            //     let newsch = await db.Scheduler.create(value)
-            //     sch_result.push(newsch.dataValues)
-            // })
-            return res.status(200).json({data: {teacher: t_result.dataValues}, message: "Update teacher information"})
+            let schedulers = req.body.schedulers
+            console.log(schedulers)
+            let schs = []
+            schedulers.map((shift) => {
+                shift.value.forEach((weekdayID) => {
+                    schs.push({teacherID: userID, shiftID: shift.shiftID, weekdayID: weekdayID})
+                })
+            })
+            await db.Scheduler.destroy({where: {teacherID: userID}, force: true})
+            await db.Scheduler.bulkCreate(schs)
+            return res.status(200).json({data: {user_info: u_result, teacher_info: t_result.dataValues, schedulers}, message: "Update teacher information"})
         } else {
-            return res.status(200).json({data: {teacher: t_result.dataValues}, message: "Update teacher information"})
+            return res.status(200).json({data: {user_info: u_result, teacher_info: t_result.dataValues}, message: "Update teacher information"})
         }
     } catch (err){
         req.body.teacher_info.teacherID = userID
@@ -108,8 +132,29 @@ const updateMatch = async(req, res) => {
     }
 }
 
+const getTeacher = async (req, res) => {
+    try {
+        const { userID } = req;
+        const user = await db.User.findOne({where:{id: userID}});
+        const {password, ...user_info} = user.dataValues
+        const teacher = await db.Teacher.findOne({where:{teacherID: userID}});
+        let {teacherID, ...teacher_info} = teacher.dataValues
+        try{
+            const schedulers = await db.Scheduler.findAll({where: {teacherID: userID}})
+            let result = {...user_info, ...teacher_info, schedulers}
+            return res.status(200).json({data: result, schedulers})
+        } catch {
+            let result = {...user_info, ...teacher_info}
+            return res.status(200).json({data: result})
+        }
+    } catch (err) {
+        return res.status(400).json({success:false, message: "Can't get user information" });
+    }
+}
+
 module.exports = {
     infoTeacher,
+    getTeacher,
     postTeacher,
     updateMatch,
     StudentList
