@@ -245,7 +245,6 @@ const searchTeacher = async (req, res) => {
 const sendOtp = async (req, res) => {
     try {
         const {email} = req.body
-        console.log(email)
         const user = await db.User.findOne({where: {email: email}})
         let otp = OTP.generate(6, {
             lowerCaseAlphabets: false,
@@ -256,13 +255,13 @@ const sendOtp = async (req, res) => {
             expiresIn: process.env.OTP_TIMEOUT
         })
         await user.update({otp: jwt_otp})
-        await user.save()
+        await user.save({fields: ['otp']})
         
         var mailOptions = {
             from: process.env.GMAIL_USER,
             to: email,
             subject: 'Sagasuy Email',
-            text: `${otp}`
+            text: `Your OTP password ${otp}`
         };
 
         transporter.sendMail(mailOptions, function(error, info){
@@ -272,14 +271,50 @@ const sendOtp = async (req, res) => {
                 console.log('Email sent: ' + info.response);
             }
         });
-        return res.status(200).json({data: user}) 
+        return res.status(200).json({data: email}) 
     } catch {
         return res.status(400).json({success: false, message: "Error"}) 
     }
 }
 
 const checkOtp = async (req, res) => {
+    try {
+        const {email, otp} = req.body
+        const user = await db.User.findOne({where: {email: email}})
+        const decoded = jwt.verify(user.otp, process.env.OTP_SECRET); 
+        console.log(decoded.otp, otp)
+        if (otp == decoded.otp){
+            console.log(1)
+            let token = jwt.sign({id: user.id}, process.env.OTP_SECRET, {
+                expiresIn: process.env.OTP_TIMEOUT
+            })
+            return res.status(200).json({data: {
+                pass_token: token
+            }})
+        } else {
+            return res.status(400).json({success: false, message: "Error"}) 
+        }
+    } catch {
+        return res.status(400).json({success: false, message: "Error"}) 
+    }
+}
 
+const changePass = async (req, res) => {
+    try {
+        const {email, password, pass_token} = req.body
+        const decoded = jwt.verify(pass_token, process.env.OTP_SECRET); 
+        const user = await db.User.findOne({where: {email: email}})
+        if (user.id == decoded.id) {
+            await user.update({password: password})
+            await user.save({ fields: ['password'] });
+            const {password, ...result} = await user.reload();
+            return res.status(200).json({data: result})
+        } else {
+            return res.status(400).json({success: false, message: "Error"}) 
+        }
+    } catch {
+        return res.status(400).json({success: false, message: "Error"})
+    }
 }
 
 module.exports = {
@@ -290,5 +325,6 @@ module.exports = {
     infoMatch,
     getMatch,
     sendOtp,
-    checkOtp
+    checkOtp,
+    changePass
 }

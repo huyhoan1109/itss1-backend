@@ -8,12 +8,13 @@ const adminController = require('../controllers/adminController');
 // router.get('/user/:id', authAdmin, adminController.getUser)
 // router.post('/user/:id', authAdmin, adminController.postUser)
 
-router.get('/dashboard', adminController.dashboard)
+router.get('/matching', adminController.allMatching)
 router.get('/user', adminController.allUser)
 router.get('/student', adminController.allStudent)
 router.get('/teacher', adminController.allTeacher)
 router.get('/user/:id', adminController.getUser)
 router.post('/user/:id', adminController.postUser)
+router.delete('/user/:id', adminController.deleteUser)
 
 module.exports = router;
 

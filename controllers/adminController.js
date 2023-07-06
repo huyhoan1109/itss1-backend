@@ -1,7 +1,24 @@
 const db = require('../models')
 const {paginate} = require('../helper')
-const dashboard = async (req, res) => {
-    
+const { Op } = require('sequelize');
+const sequelize = require('../database')
+
+const allMatching = async (req, res) => {
+    db.Matching.count({
+        where: {
+            status: 'approve'
+        },
+        attributes: [
+          [sequelize.fn("MONTH", sequelize.col("createdAt")), "month"],
+        ],
+        group: ["month"],
+    })
+    .then((result) => {
+        return res.status(200).json({data: result})
+    })
+    .catch((error) => {
+        return res.status(400).json({success: false, message: error});
+    });
 };
 
 const allUser = async (req, res) => {
@@ -22,7 +39,6 @@ const allUser = async (req, res) => {
             let message = ''
             if (count > 1) message = `Finded ${count} results`
             else message = `Finded ${count} result`
-            console.log(results)
             return res.status(200).json({
                 data: results, 
                 infoPage: {
@@ -60,6 +76,7 @@ const getUser = async (req, res) => {
 
 const postUser = async (req, res) => {
     const userID = req.params.id 
+    console.log(req.body)
     try {
         const update = {};
         const keys = Object.keys(req.body)
@@ -83,13 +100,18 @@ const postUser = async (req, res) => {
 };
 
 const allStudent = async (req, res) => {
+    const name = req.query.name
     const currentPage = req.query.page || 1
     const pageSize = req.query.limit || 16
-    const options ={ 
+    const options = { 
         where: {
             role: 'student'
         }
     }
+    if (name)
+        options.where.name = {
+            [Op.regexp]: `(?i)^.*${name}.*$`
+        }
     const {offset, limit} = paginate(currentPage, pageSize)
     db.User.findAndCountAll({...options, offset, limit})
         .then(async ({count, rows}) => {
@@ -102,7 +124,6 @@ const allStudent = async (req, res) => {
             let message = ''
             if (count > 1) message = `Finded ${count} results`
             else message = `Finded ${count} result`
-            console.log(results)
             return res.status(200).json({
                 data: results, 
                 infoPage: {
@@ -119,13 +140,19 @@ const allStudent = async (req, res) => {
 }
 
 const allTeacher = async (req, res) => {
+    const name = req.query.name
     const currentPage = req.query.page || 1
     const pageSize = req.query.limit || 16
-    const options ={ 
+    const options = { 
         include: {
-            model: db.User
+            model: db.User,
+            where: {}
         }
     }
+    if (name)
+        options.include.where.name = {
+            [Op.regexp]: `(?i)^.*${name}.*$`
+        }
     const {offset, limit} = paginate(currentPage, pageSize)
     db.Teacher.findAndCountAll({...options, offset, limit})
         .then(({count, rows}) => {
@@ -139,7 +166,6 @@ const allTeacher = async (req, res) => {
             let message = ''
             if (count > 1) message = `Finded ${count} results`
             else message = `Finded ${count} result`
-            console.log(results)
             return res.status(200).json({
                 data: results, 
                 infoPage: {
@@ -155,11 +181,22 @@ const allTeacher = async (req, res) => {
         })
 }
 
+const deleteUser = async (req, res) => {
+    try {
+        const userID = req.body.userID
+        const result = await db.User.destroy({where: {id:userID}, force: true})
+        return res.status(400).json({data: result});
+    } catch {
+        return res.status(400).json({success: false, message: "Error"});
+    }
+}
+
 module.exports = {
-    dashboard,
+    allMatching,
     allUser,
     getUser,
     postUser,
     allStudent,
-    allTeacher
+    allTeacher,
+    deleteUser
 }

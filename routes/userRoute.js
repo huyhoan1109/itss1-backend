@@ -11,7 +11,7 @@ router.post('/matching', authUser, userController.requestMatch)
 router.get('/matching/teacher/:id', authUser, userController.infoMatch)
 router.post('/send_otp', userController.sendOtp)
 router.post('/check_otp', userController.checkOtp)
-
+router.post('/change_password', userController.changePass)
 
 module.exports = router;
 

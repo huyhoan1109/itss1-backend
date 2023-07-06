@@ -137,14 +137,19 @@ const getTeacher = async (req, res) => {
         const { userID } = req;
         const user = await db.User.findOne({where:{id: userID}});
         const {password, ...user_info} = user.dataValues
-        const teacher = await db.Teacher.findOne({where:{teacherID: userID}});
-        let {teacherID, ...teacher_info} = teacher.dataValues
-        try{
-            const schedulers = await db.Scheduler.findAll({where: {teacherID: userID}})
-            let result = {...user_info, ...teacher_info, schedulers}
-            return res.status(200).json({data: result, schedulers})
+        try {
+            const teacher = await db.Teacher.findOne({where:{teacherID: userID}});
+            let {teacherID, ...teacher_info} = teacher.dataValues
+            try{
+                const schedulers = await db.Scheduler.findAll({where: {teacherID: userID}})
+                let result = {...user_info, ...teacher_info, schedulers}
+                return res.status(200).json({data: result, schedulers})
+            } catch {
+                let result = {...user_info, ...teacher_info}
+                return res.status(200).json({data: result})
+            }
         } catch {
-            let result = {...user_info, ...teacher_info}
+            let result = {...user_info}
             return res.status(200).json({data: result})
         }
     } catch (err) {
