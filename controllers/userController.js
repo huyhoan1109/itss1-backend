@@ -23,7 +23,7 @@ const postUser = async (req, res) => {
         const update = {};
         const keys = Object.keys(req.body)
         for (const key of keys){
-            if (key == 'role' || key == 'email'){
+            if (key == 'role'){
                 throw "Can't change this attributes"
             }
             if (req.body[key] !== '') {
@@ -282,9 +282,7 @@ const checkOtp = async (req, res) => {
         const {email, otp} = req.body
         const user = await db.User.findOne({where: {email: email}})
         const decoded = jwt.verify(user.otp, process.env.OTP_SECRET); 
-        console.log(decoded.otp, otp)
-        if (otp == decoded.otp){
-            console.log(1)
+        if (otp === decoded.otp){
             let token = jwt.sign({id: user.id}, process.env.OTP_SECRET, {
                 expiresIn: process.env.OTP_TIMEOUT
             })

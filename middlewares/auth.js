@@ -27,7 +27,7 @@ async function authTeacher(req, res, next){
         .then(async (id) => {
             req.userID = id
             const user = await db.User.findOne({where: {id: id}})
-            if (user.role == 'teacher') {
+            if (user.role === 'teacher') {
                 if (user.isBlock) return res.status(400).json({success:false, message: "You has been blocked"})
                 else return next()
             } else {
@@ -44,7 +44,7 @@ async function authAdmin(req, res, next){
         .then(async (id) => {
             req.userID = id
             const user = await db.User.findOne({where: {id: id}})
-            if (user.role == 'admin') {
+            if (user.role === 'admin') {
                 return next()
             } else {
                 return res.status(400).json({success:false, message: "You aren't an admin"})

@@ -4,7 +4,6 @@ const bodyParser = require('body-parser')
 const cors = require('cors');
 const sequelize = require('./database')
 
-
 sequelize.authenticate().then(() => {
     console.log('Connection has been established successfully.');
 }).catch((error) => {

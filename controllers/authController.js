@@ -24,8 +24,11 @@ const login = async (req, res) => {
         if (!user) {
             return res.status(400).json({success: false, message:"User not found"});
         }
-        if (!(user.validPassword(req.body.password))) {
-            return res.status(400).json({success: false, message:"Invalid password"});
+        if (!(user.validPassword(req.body.password)) || user.isBlock) {
+            return res.status(400).json({success: false, message:"Invalid password or you has been blocked"});
+        }
+        if (user.isBlock) {
+            return res.status(400).json({success: false, message:"You has been blocked"});
         }
         let token = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: process.env.TOKEN_TIMEOUT

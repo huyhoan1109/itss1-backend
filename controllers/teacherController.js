@@ -56,7 +56,6 @@ const StudentList = async (req, res) => {
 const postTeacher = async (req, res) => {
     const { userID } = req
     try {
-        console.log(req.body)
         const u_update = {};
         const u_keys = Object.keys(req.body.user_info)
         for (const key of u_keys){
@@ -89,7 +88,6 @@ const postTeacher = async (req, res) => {
 
         if (req?.body?.schedulers){
             let schedulers = req.body.schedulers
-            console.log(schedulers)
             let schs = []
             schedulers.map((shift) => {
                 shift.value.forEach((weekdayID) => {

@@ -1,17 +1,18 @@
 const db = require('../models')
 const {paginate} = require('../helper')
 const { Op } = require('sequelize');
-const sequelize = require('../database')
+
 
 const allMatching = async (req, res) => {
+    const a = await db.Matching.findAll()
     db.Matching.count({
         where: {
             status: 'approve'
         },
         attributes: [
-          [sequelize.fn("MONTH", sequelize.col("createdAt")), "month"],
+          [db.sequelize.fn("date_part", "month", db.sequelize.col("createdAt")), "month"]
         ],
-        group: ["month"],
+        group: ["month"]
     })
     .then((result) => {
         return res.status(200).json({data: result})
@@ -76,7 +77,6 @@ const getUser = async (req, res) => {
 
 const postUser = async (req, res) => {
     const userID = req.params.id 
-    console.log(req.body)
     try {
         const update = {};
         const keys = Object.keys(req.body)
