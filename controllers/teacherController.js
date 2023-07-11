@@ -111,13 +111,11 @@ const postTeacher = async (req, res) => {
                     schs.push({teacherID: userID, shiftID: shift.shiftID, weekdayID: weekdayID})
                 })
             })
-            await db.Scheduler.destroy({where: {teacherID: userID}, force: true})
             await db.Scheduler.bulkCreate(schs)
             return res.status(200).json({data: {user_info: u_result, teacher_info: t_result.dataValues, schedulers}, message: "Update teacher information"})
         } else {
             return res.status(200).json({data: {user_info: u_result, teacher_info: t_result.dataValues}, message: "Update teacher information"})
         }
-        return res.status(200).json({data: result, message: "Create new teacher information"})
     }
 }
 
