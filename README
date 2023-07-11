@@ -5,10 +5,7 @@ Cài node_modules:
     yarn
 
 Tạo file .env tự config:
-    DB_HOST="localhost"
-    DB_NAME="itss1"
-    DB_USER="username"
-    DB_PASSWORD="password"
+    DB_URL="mysql://username:password@hostname:port/database_name"
     REFRESH_TOKEN_SECRET=""
     ACCESS_TOKEN_SECRET=""
     TOKEN_TIMEOUT="1h"
