@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       })
     }
     validPassword(password){
-      return bcrypt.compareSync(password, this.password);
+      return password === this.password;
     }
   }
   User.init({
@@ -90,13 +90,13 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'User',
     hooks: {
       beforeCreate: async (user) => {
-        const salt = await bcrypt.genSaltSync(10);
-        user.password = await bcrypt.hashSync(user.password, salt);
+        // const salt = await bcrypt.genSaltSync(10);
+        // user.password = await bcrypt.hashSync(user.password, salt);
       },
       beforeUpdate: async (user) => {
         if (user.changed('password')){
-          const salt = await bcrypt.genSaltSync(10);
-          user.password = await bcrypt.hashSync(user.password, salt);
+          // const salt = await bcrypt.genSaltSync(10);
+          // user.password = await bcrypt.hashSync(user.password, salt);
         }
       }
     }

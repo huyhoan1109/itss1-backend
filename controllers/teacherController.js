@@ -55,18 +55,18 @@ const StudentList = async (req, res) => {
 
 const postTeacher = async (req, res) => {
     const { userID } = req
-    try {
-        const u_update = {};
-        const u_keys = Object.keys(req.body.user_info)
-        for (const key of u_keys){
-            if (req.body.user_info[key] !== '') {
-                u_update[key] = req.body.user_info[key];
-            }
+    const u_update = {};
+    const u_keys = Object.keys(req.body.user_info)
+    for (const key of u_keys){
+        if (req.body.user_info[key] !== '') {
+            u_update[key] = req.body.user_info[key];
         }
-        const user = await db.User.findOne({where:{id: userID}})
-        await user.update(u_update)
-        await user.save({ fields: u_keys });
-        const u_result = await user.reload();
+    }
+    const user = await db.User.findOne({where:{id: userID}})
+    await user.update(u_update)
+    await user.save({ fields: u_keys });
+    const u_result = await user.reload();
+    try {
 
         const t_update = {};
         const t_keys = Object.keys(req.body.teacher_info)
@@ -102,8 +102,20 @@ const postTeacher = async (req, res) => {
         }
     } catch (err){
         req.body.teacher_info.teacherID = userID
-        const result = await db.Teacher.create(req.body.teacher_info)
-        return res.status(200).json({data: result, message: "Create new teacher information"})
+        const t_result = await db.Teacher.create(req.body.teacher_info)
+        if (req?.body?.schedulers){
+            let schedulers = req.body.schedulers
+            let schs = []
+            schedulers.map((shift) => {
+                shift.value.forEach((weekdayID) => {
+                    schs.push({teacherID: userID, shiftID: shift.shiftID, weekdayID: weekdayID})
+                })
+            })
+            await db.Scheduler.bulkCreate(schs)
+            return res.status(200).json({data: {user_info: u_result, teacher_info: t_result.dataValues, schedulers}, message: "Update teacher information"})
+        } else {
+            return res.status(200).json({data: {user_info: u_result, teacher_info: t_result.dataValues}, message: "Update teacher information"})
+        }
     }
 }
 
