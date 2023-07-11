@@ -153,6 +153,9 @@ const searchTeacher = async (req, res) => {
     const low_price = filters.low_price
     const high_price = filters.high_price
     const teach_method = filters.teach_method
+    const shift = filters.shift
+    const days = filters.days
+    console.log(shift, days)
     const options = { 
         where: {},
         include: [
@@ -200,7 +203,15 @@ const searchTeacher = async (req, res) => {
                 }
             }
         } 
-
+    if (shift && days)
+        options.include[1].where = {
+            [Op.and]: {
+                shiftID: shift,
+                weekdayID: {
+                    [Op.in]: days
+                }
+            }
+        }
     const {offset, limit} = paginate(currentPage, pageSize)
 
     db.Teacher.findAndCountAll({
